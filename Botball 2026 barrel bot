@@ -1,0 +1,151 @@
+ #include <kipr/wombat.h>
+
+int lmotor = 2;
+int rmotor = 1;
+int sidesensor = 5;
+int frontsensor = 0;
+int count = 0;
+void movepom();
+void closepom();
+void forward();
+void stop();
+void hitwall();
+void collect();
+void dump();
+void backup();
+void shimmy();
+void veerR();
+void veerL();
+void turnR();
+void turnL();
+void start();
+
+int main()
+{
+    enable_servos();
+    while(count < 2)
+    {
+        if(analog(1) > 2900)
+        {
+            count=count+1;
+            msleep(1000);
+
+        }
+        if(analog(0) < 1700)
+        {
+            forward();
+        }
+        if(analog(0) > 1900)
+        {
+            movepom();
+            closepom();
+            forward();
+            msleep(950);
+            stop();
+            veerR();
+            msleep(800);
+            veerL();
+            msleep(300);
+        }
+    }
+    hitwall();
+    dump();
+    disable_servos();
+    return 0;
+
+}
+
+//Function Definitions
+
+void hitwall()
+{
+    stop();
+    collect();
+}
+
+void collect()
+{
+    set_servo_position(1, 1650);
+    set_servo_position(2, 435);
+    shimmy();
+    msleep(60000);
+}
+
+void dump()
+{
+    set_servo_position(2, 1324);
+    set_servo_position(1, 624);
+    backup();
+    stop();
+    set_servo_position(2, 1124);
+    set_servo_position(1, 824);
+    set_servo_position(2, 1324);
+    set_servo_position(1, 624);
+    
+}
+
+void start()
+{
+    set_servo_position(2, 1970);
+    set_servo_position(1, 70);
+    msleep(2000);
+
+}
+
+void movepom()
+{
+    stop();
+    set_servo_position(0, 915);
+    msleep(500);
+}
+
+void closepom()
+{
+    set_servo_position(0, 1875);
+    msleep(1000);
+}
+
+void stop()
+{
+    motor(rmotor, 0);
+    motor(lmotor, 0);
+    msleep(500);
+}
+
+void forward()
+{
+    motor(lmotor, -63);
+    motor(rmotor, 55);
+}
+
+void backup()
+{
+    motor(lmotor, 60);
+    motor(rmotor, -60);
+    msleep(1500);
+    stop();
+}
+
+void shimmy()
+{
+    motor(lmotor, 60);
+    motor(rmotor, -60);
+    msleep(500);
+    motor(lmotor, -63);
+    motor(rmotor, 55);
+    msleep(500);
+    stop();
+}
+
+void veerL()
+{
+    motor(rmotor, 50);
+    motor(lmotor, -20);
+}
+
+void veerR()
+{
+    motor(rmotor, 30);
+    motor(lmotor, -60);
+}
+
