@@ -1,0 +1,330 @@
+#include <kipr/wombat.h>
+
+/****************************************/
+/**     Brandon Sumba & Frank.K.R.     **/
+/**     Wombat-5144 "GROUND ROLLER"    **/
+/**             The-End-?              **/
+/****************************************/
+// VARIABLES
+// MOVEMENT
+int left_motor = 0;
+int right_motor = 1;
+// ELABORATED MOVEMENT
+// "basic" 
+int forward()
+{
+    int speed = 50;
+	motor(right_motor, speed);
+	motor(left_motor, speed);
+}
+
+int forward_faster()
+{
+    int speed = 50;
+	motor(right_motor, 100);
+	motor(left_motor, 100);
+}
+
+int backward()
+{
+    int speed = 50;
+	motor(right_motor, -speed);
+	motor(left_motor, -speed);
+}
+
+int faster_backward()
+{
+    int speed = 50;
+	motor(right_motor, -speed - 50);
+	motor(left_motor, -speed - 50);
+}
+// "line-specific"
+int long_turn_right()
+{
+    int speed = 50;
+	motor(right_motor, speed);
+	motor(left_motor, 0);
+}
+
+int long_turn_left()
+{
+    int speed = 50;
+	motor(right_motor, 0);
+	motor(left_motor, speed);
+}
+
+// "forward"
+int line_veer_right()
+{
+    int speed = 50;
+	motor(right_motor, speed + 15);
+	motor(left_motor, speed - 10);
+}
+
+int line_veer_left()
+{
+    int speed = 50;
+	motor(right_motor, 0);
+	motor(left_motor, speed + 35);
+}
+
+// "forward"
+int REVERSE_line_veer_right()
+{
+    int speed = 50;
+	motor(right_motor, - 60);
+	motor(left_motor, - speed);
+}
+
+int REVERSE_line_veer_left()
+{
+    int speed = 50;
+	motor(right_motor, -85);
+	motor(left_motor, 0);
+}
+// ------------------------------
+int angle_turn_left()
+{
+    int speed = 50;
+	motor(right_motor, 0);
+	motor(left_motor, speed + 35);
+}
+
+int angle_turn_right()
+{
+    int speed = 50;
+	motor(right_motor, speed + 35);
+	motor(left_motor, 0);
+}
+
+int super_angle_turn_left()
+{
+    int speed = 50;
+	motor(right_motor, 0);
+	motor(left_motor, speed + 50);
+}
+
+int REVERSE_angle_turn_left()
+{
+    int speed = 50;
+	motor(right_motor, 0);
+	motor(left_motor, -85);
+}
+/********************/
+// SERVOS
+int side_grabber = 0;
+int enforcer = 1;
+/********************/
+// SENSORS
+int tophat_right = 1;
+int tophat_left = 5;
+/********************/
+// STATES - CHECKERS
+/****************************************/
+// FUNCTIONS
+int main()
+{
+    enable_servos();
+    set_servo_position(side_grabber, 1585);
+    set_servo_position(enforcer, 1720);
+    msleep(600);
+ 
+    // APPROACH LINE
+
+    int approach = 1;
+    while(approach==1)
+    {
+    	printf("Approaching line..\n");
+    	forward();
+        // TURN TO LINE
+        if(analog(tophat_right) > 3000)
+        {
+    		printf("Shift!\n");
+            forward();
+            msleep(800);
+            ao();
+            set_servo_position(side_grabber, 0);
+            //COME BACK HERE LATER -- NOTE
+            long_turn_right();
+            msleep(3070);
+            ao();
+            //backward();
+            //msleep(300);
+            line_veer_right();
+            msleep(100);
+            forward();
+            msleep(100);
+            approach = 2;
+        }
+    }
+    // TRACE THE LINE
+   
+    
+    while(approach==2)
+    {
+    	printf("Line Follow--\n");
+        if(analog(tophat_right)>1500)
+        {
+        	line_veer_left();
+            
+        }
+        else
+        {
+        	line_veer_right();
+        }   
+      
+        if(analog(tophat_left)>=1000)
+        {
+        	ao();
+            printf("iuoyghifaerglihlweagr\n");
+            // so this is the edit
+            backward();
+            msleep(500);
+            line_veer_left();
+            msleep(300);
+            forward();
+            msleep(600);
+            line_veer_right();
+            msleep(800);
+            approach = 11;
+        } 
+    }
+    while(approach==11)
+    {
+        printf("Line Follow--\n");
+        if(analog(tophat_right)>1500)
+        {
+        	line_veer_left();
+        }
+        else
+        {
+        	line_veer_right();
+        }    	
+        // 1 OF 4 DONE HERE
+        if(analog(tophat_left)>1000)
+        {
+			printf("gabagool\n");
+            // drop off
+            forward();
+            msleep(500);
+            angle_turn_left();
+            msleep(400);
+            forward();
+            msleep(700);
+            ao();
+        	msleep(500);
+            // ah ah i gotta get outta here
+            backward();
+            msleep(100);
+            REVERSE_angle_turn_left();
+            msleep(400);
+            backward();
+            msleep(500);
+            ao();
+            approach = 3; 
+        } 
+    }
+    while(approach == 3)
+    {
+        // 	2 OF 4 DONE HERE
+    	backward();
+        msleep(3000);
+		angle_turn_left();
+        msleep(400);
+        forward();
+        msleep(800);
+        ao();
+        set_servo_position(side_grabber, 1300);
+        msleep(500);
+        backward();
+        msleep(800);
+		REVERSE_angle_turn_left();
+        msleep(350);
+        backward();
+        msleep(400);
+        set_servo_position(side_grabber, 0);
+        approach = 4;
+    }
+    int extra_var;
+    while(approach == 4)
+    {
+        // SHIFTER -- TO BLUE
+        if(analog(tophat_left)>=2000)
+        {
+        	printf("SAY WALLAHI BRO SAY WALLAHI\n");
+            ao();
+            msleep(100);
+            faster_backward();
+            msleep(750);
+            extra_var = 1;
+            // COME BACK HERE NOW
+        }
+        else
+        {
+            printf("im goingb ackward yet again\n");
+        	backward();
+        }
+        while(extra_var == 1)
+        {
+            int reverse_get_off()
+            {
+                printf("im gettin off\n");
+                int speed = -50;
+				motor(right_motor, speed);
+				motor(left_motor, speed + 30);
+            }
+        	int reverse_get_on()
+            {
+                printf("get on th eline\n");
+                int speed = -50;
+				motor(right_motor, speed + 30);
+				motor(left_motor, speed);
+            }
+            printf("the good thing\n");
+        	if(analog(tophat_right)>=1500)
+            {
+            	reverse_get_on();
+            }
+            else
+            {
+            	reverse_get_off();
+            }
+        }
+    }
+    while(approach == 100)
+    {
+        printf("hey i can do this\n");
+        set_servo_position(side_grabber, 1585);
+        long_turn_left();
+        msleep(2500);
+        if(analog(tophat_right)>=1500)
+        {
+        	ao();
+            msleep(100);
+            forward();
+            msleep(100);
+            set_servo_position(side_grabber, 0);
+            msleep(1000);
+            ao();
+        }
+        else
+        {
+            forward();
+        }
+    }
+    while(approach == 7689)
+    {
+        printf("HEY LOOK AT ME LOOK AT ME\n");
+		if(analog(tophat_left)>1500)
+        {
+        	line_veer_left();
+        }
+        else
+        {
+        	line_veer_right();
+        }  
+    }
+    return 0;
+}
+
+
